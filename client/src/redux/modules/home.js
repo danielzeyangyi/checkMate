@@ -1,5 +1,7 @@
 import { get } from '../../utils/request';
 import url from '../../utils/url';
+import { FETCH_DATA } from '../middleware/api';
+import { schema } from './entities/products';
 
 //action types
 export const types = {
@@ -11,6 +13,11 @@ export const types = {
 // action creators
 export const actions = {
   loadLikes: () => (dispatch, getState) => {
+    const endpoint = url.getProductList(0, 10);
+    return dispatch(fetchLikes(endpoint));
+  },
+
+  legacyLoadLikes: () => (dispatch, getState) => {
     dispatch(fetchLikesRequest());
 
     return get(url.getProductList(0, 10)).then(
@@ -23,6 +30,18 @@ export const actions = {
     );
   }
 };
+
+const fetchLikes = (endpoint, params) => ({
+  [FETCH_DATA]: {
+    types: [
+      type.FETCH_LIKES_REQUEST,
+      type.FETCH_LIKES_SUCCESS,
+      type.FETCH_LIKES_FAILURE
+    ],
+    endpoint,
+    schema
+  }
+});
 
 const fetchLikesRequest = () => ({
   type: types.FETCH_LIKES_REQUEST
