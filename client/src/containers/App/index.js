@@ -7,8 +7,6 @@ import Home from '../Home';
 import ErrorToast from '../../components/ErrorToast';
 import { actions as appActions, getError } from '../../redux/modules/app';
 
-import './style.css';
-
 class App extends Component {
   render() {
     const {
