@@ -3,7 +3,7 @@ import { get } from '../../utils/request';
 export const FETCH_DATA = 'FETCH_DATA';
 
 export default store => next => action => {
-  const callAPI = action[fetch_DATA];
+  const callAPI = action[FETCH_DATA];
   if (typeof callAPI === 'undefined') {
     return next(action);
   }
@@ -33,7 +33,7 @@ export default store => next => action => {
           response
         })
       ),
-    err =>
+    error =>
       next(
         actionWith({
           type: failureType,
@@ -56,7 +56,7 @@ const normalizeData = (data, schema) => {
   const ids = []; // store the order of objs
   if (Array.isArray(data)) {
     data.forEach(item => {
-      kv[item[id]] = item;
+      kvObj[item[id]] = item;
       ids.push(item[id]);
     });
   } else {

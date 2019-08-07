@@ -3,7 +3,7 @@ const headers = new Headers({
   'Content-Type': 'application/json'
 });
 
-function get() {
+function get(url) {
   return fetch(url, {
     method: 'GET',
     headers: headers
@@ -11,7 +11,7 @@ function get() {
     .then(response => {
       handleResponse(url, response);
     })
-    .catch(err => {
+    .catch(error => {
       console.log(`error failed. Url:${url}`);
       return Promise.reject({
         error: { message: `request failed due to${error.message}` }
@@ -28,7 +28,7 @@ function post(url, data) {
     .then(response => {
       handleResponse(url, response);
     })
-    .catch(err => {
+    .catch(error => {
       console.log(`error failed. Url:${url}`);
       return Promise.reject({
         error: { message: `request failed due to${error.message}` }

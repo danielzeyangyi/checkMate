@@ -4,9 +4,11 @@ import home from './home';
 import app from './app';
 import detail from './detail';
 
-export default (rootReducer = combineReducers({
+const rootReducer = combineReducers({
   entities,
   home,
   app,
   detail
-}));
+});
+
+export default rootReducer;
