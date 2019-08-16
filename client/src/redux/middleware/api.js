@@ -1,6 +1,7 @@
 import { get } from '../../utils/request';
-// the schema for any incoming actions
-export const FETCH_DATA = 'FETCH_DATA';
+
+//经过中间件处理的action所具有的标识
+export const FETCH_DATA = 'FETCH DATA';
 
 export default store => next => action => {
   const callAPI = action[FETCH_DATA];
@@ -8,24 +9,30 @@ export default store => next => action => {
     return next(action);
   }
 
-  const { endPoint, schema, types } = callAPI;
-  if (typeof endPoint !== 'string')
-    throw new Error('end point must by string format');
-  if (schema) throw new Error('Schema must be pointing to a domain');
-  if (!Array.isArray(types) && types.length !== 3)
-    throw new Error('Must assign a list of at least 3 actions');
-  if (!types.every(type => typeof type === 'string'))
-    throw new Error('action type must be string');
+  const { endpoint, schema, types } = callAPI;
+  if (typeof endpoint !== 'string') {
+    throw new Error('endpoint必须为字符串类型的URL');
+  }
+  if (!schema) {
+    throw new Error('必须指定领域实体的schema');
+  }
+  if (!Array.isArray(types) && types.length !== 3) {
+    throw new Error('需要指定一个包含了3个action type的数组');
+  }
+  if (!types.every(type => typeof type === 'string')) {
+    throw new Error('action type必须为字符串类型');
+  }
 
   const actionWith = data => {
     const finalAction = { ...action, ...data };
     delete finalAction[FETCH_DATA];
     return finalAction;
   };
+
   const [requestType, successType, failureType] = types;
 
   next(actionWith({ type: requestType }));
-  return fetchData(endPoint, schema).then(
+  return fetchData(endpoint, schema).then(
     response =>
       next(
         actionWith({
@@ -37,23 +44,24 @@ export default store => next => action => {
       next(
         actionWith({
           type: failureType,
-          error: error.message || 'fail to load the data'
+          error: error.message || '获取数据失败'
         })
       )
   );
 };
 
-const fetchData = (endPoint, schema) => {
-  return get(endPoint).then(data => {
-    // notmalize data into key value pair structure
+//执行网络请求
+const fetchData = (endpoint, schema) => {
+  return get(endpoint).then(data => {
     return normalizeData(data, schema);
   });
 };
 
+//根据schema, 将获取的数据扁平化处理
 const normalizeData = (data, schema) => {
   const { id, name } = schema;
   let kvObj = {};
-  const ids = []; // store the order of objs
+  let ids = [];
   if (Array.isArray(data)) {
     data.forEach(item => {
       kvObj[item[id]] = item;
@@ -61,9 +69,8 @@ const normalizeData = (data, schema) => {
     });
   } else {
     kvObj[data[id]] = data;
-    ids.push(data.id);
+    ids.push(data[id]);
   }
-
   return {
     [name]: kvObj,
     ids
