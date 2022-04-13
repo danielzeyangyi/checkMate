@@ -55,7 +55,7 @@ export const actions = {
     return (dispatch, getState) => {
       const { ids } = getState().home.discounts;
       // we can use the list of discounts already loaded in store, we then skip the http request
-      if (id.length > 0) {
+      if (ids.length > 0) {
         return null;
       }
       const endpoint = url.getProductList(
